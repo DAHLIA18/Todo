@@ -1,2 +1,5 @@
-package africa.semicolon.todo.dtos.responses;public class RegisterResponse {
+package africa.semicolon.todo.dtos.responses;
+
+public class RegisterResponse {
+
 }

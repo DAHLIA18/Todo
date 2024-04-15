@@ -1,0 +1,16 @@
+POST http://localhost:8080/user/register
+Content-Type: application/json
+Content-Length: 48
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.10)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "password": "password",
+  "email": "email"
+}
+
+<> 2024-04-12T193155.200.json
+
+###
+

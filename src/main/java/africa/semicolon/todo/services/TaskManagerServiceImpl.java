@@ -1,47 +1,65 @@
 package africa.semicolon.todo.services;
 
 import africa.semicolon.todo.data.model.Task;
-import africa.semicolon.todo.data.model.TodoList;
-import africa.semicolon.todo.data.repositories.TodoListRepository;
+import africa.semicolon.todo.data.model.TaskManager;
+import africa.semicolon.todo.data.model.User;
+import africa.semicolon.todo.data.repositories.TaskManagerRepository;
 import africa.semicolon.todo.dtos.requests.CreateTaskRequest;
-import lombok.AllArgsConstructor;
+import africa.semicolon.todo.dtos.requests.DeleteATaskRequest;
+import com.mongodb.internal.bulk.DeleteRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 @Service
-public class TodoListServiceImpl implements TodoListService{
-    private final TodoList todoList;
+public class TaskManagerServiceImpl implements TaskManagerService {
+
     @Autowired
-    private TodoListRepository todoListRepository;
+    private TaskManagerRepository taskManagerRepository;
     @Autowired
     private TaskService taskService;
 
-    public TodoListServiceImpl() {
-        todoList = new TodoList();
+
+    public TaskManager createTaskManager(User user){
+        if (taskManagerRepository.findTodoListByUserEmail(user.getEmail()).isEmpty()){
+            TaskManager taskManager = new TaskManager();
+            taskManager.setUser(user);
+            this.taskManagerRepository.save(taskManager);
+            return taskManager;
+        }
+        return taskManagerRepository.findById(user.getEmail()).orElseThrow();
+    }
+
+
+
+    @Override
+    public ArrayList<Task> viewAllTasks(User user) {
+        TaskManager taskManager = findTaskManagerByUser(user);
+        return taskManager.getTasks();
     }
     @Override
-    public boolean isLocked() {
-        return !todoList.isLogOut();
+    public ArrayList<Task> deleteTasks(DeleteATaskRequest deleteATaskRequest) {
+        TaskManager taskManager = findTaskManagerByUser(deleteATaskRequest.getUser());
+        taskManager.getTasks().remove(deleteATaskRequest.getTask());
+        taskManagerRepository.save(taskManager);
+        return taskManager.getTasks();
     }
 
     @Override
-    public ArrayList<Task> tasks() {
-        return todoList.getTasks();
-    }
-
-    @Override
-    public Task createTask(CreateTaskRequest createTaskRequest) {
-        todoList.setUser(createTaskRequest.getUser());
+    public Task createTask(CreateTaskRequest createTaskRequest){
         Task task =  taskService.createTask(createTaskRequest);
-        ArrayList<Task> tasks = todoList.getTasks();
+        TaskManager taskManager = findTaskManagerByUser(createTaskRequest.getUser());
+        ArrayList<Task> tasks = viewAllTasks(createTaskRequest.getUser());
         tasks.add(task);
-        todoList.setTasks(tasks);
-        todoListRepository.save(todoList);
+        taskManager.setTasks(tasks);
+        this.taskManagerRepository.save(taskManager);
         return task;
-    }
+    };
+
+
+
     @Override
-    public TodoList todo() {
-        return todoList;
+    public TaskManager findTaskManagerByUser(User user){
+        return taskManagerRepository.findTaskManagerByUser(user).orElseThrow();
     }
 }

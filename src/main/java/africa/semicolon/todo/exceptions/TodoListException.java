@@ -1,7 +1,7 @@
 package africa.semicolon.todo.exceptions;
 
-public class TodoAppException extends RuntimeException {
-    public TodoAppException(String message) {
+public class TodoListException extends RuntimeException {
+    public TodoListException(String message) {
         super(message);
     }
 }

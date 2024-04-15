@@ -1,35 +1,20 @@
 package africa.semicolon.todo.services;
 
-import africa.semicolon.todo.data.model.Work;
-import africa.semicolon.todo.dtos.requests.CreateWorkRequest;
-import africa.semicolon.todo.dtos.requests.UpdateWorkRequest;
-import africa.semicolon.todo.dtos.responses.WorkResponse;
+import africa.semicolon.todo.data.model.Task;
+import africa.semicolon.todo.dtos.requests.CreateTaskRequest;
+import africa.semicolon.todo.dtos.requests.UpdateRequest;
+import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
+public interface TaskService {
 
-public interface WorkService {
+    Task createTask(CreateTaskRequest createTaskRequest);
+    Task updateTask(UpdateRequest update);
 
-    List<Work> getAllTask();
+    void deleteParticularTask(String id);
 
-    String getWorkByTitle(String id);
+    Task findTaskById(String id);
 
-    List<Work> getAllWork();
-    String getTaskByTitle(String id);
-    WorkResponse updateTask(UpdateWorkRequest work);
-
-    String deleteTask(CreateWorkRequest request);
-
-    long getCountOfTask();
-
-    String taskDone(Work work);
-
-    String workDone(Work work);
-
-    void deleteTask(Work work);
-
-    void deleteAll();
-
-    Work findByTitle(String title);
-
-    Work save(Work newWork);
+    List<Task> findParticularTaskInADay(String todoId, Date dateCreated);
 }

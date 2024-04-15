@@ -1,2 +1,10 @@
-package africa.semicolon.todo.dtos.requests;public class RegisterRequest {
+package africa.semicolon.todo.dtos.requests;
+
+import lombok.Data;
+
+@Data
+public class RegisterRequest {
+    private String email;
+    private String password;
+//    private String username;
 }

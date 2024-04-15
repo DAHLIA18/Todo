@@ -1,8 +1,8 @@
 package africa.semicolon.todo.exceptions;
 
-public class TaskNotFoundException extends TodoListException {
+public class InvalidDetailsException extends TodoListException {
 
-    public TaskNotFoundException(String message) {
+    public InvalidDetailsException(String message) {
         super(message);
     }
 }

@@ -1,92 +1,61 @@
 package africa.semicolon.todo.services;
 
-import africa.semicolon.todo.data.model.Work;
-import africa.semicolon.todo.data.repositories.WorkRepository;
-import africa.semicolon.todo.dtos.requests.CreateWorkRequest;
-import africa.semicolon.todo.dtos.requests.UpdateWorkRequest;
-import africa.semicolon.todo.dtos.responses.WorkResponse;
-import africa.semicolon.todo.exceptions.WorkNotFoundException;
+import africa.semicolon.todo.data.model.Task;
+import africa.semicolon.todo.data.repositories.TaskRepository;
+import africa.semicolon.todo.dtos.requests.CreateTaskRequest;
+import africa.semicolon.todo.dtos.requests.UpdateRequest;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+
 @Service
-@AllArgsConstructor
-public class WorkServiceImpl implements WorkService{
-
-    private  WorkRepository workRepository;
+public class TaskServiceImpl implements TaskService {
+    @Autowired
+    private TaskRepository taskRepository;
 
     @Override
-    public String getWorkByTitle(String title) {
-        workRepository.findByTitle(title);
-        return title;
+    public Task createTask(CreateTaskRequest createTaskRequest) {
+        Task task = new Task();
+        task.setDetails(createTaskRequest.getDetails());
+        task.setTitle(createTaskRequest.getTitle());
+        task.setReminder(createTaskRequest.getReminder());
+         taskRepository.save(task);
+        return task;
     }
 
     @Override
-    public List<Work> getAllWork() {
-        return workRepository.findAll();
+    public Task updateTask(UpdateRequest update) {
+       Task task = findTaskById(update.getId());
+     if (update.getNewTitle() != null) {
+         task.setTitle(update.getNewTitle());
+     }
+      if (update.getNewDetails() != null) {
+          task.setDetails(update.getNewDetails());
+      }
+       if (update.getReminder() != null) {
+           task.setReminder(update.getReminder());
+       }
+       taskRepository.save(task);
+       return task;
     }
 
     @Override
-    public WorkResponse updateTask(UpdateWorkRequest work) {
-        Work updateWork = workRepository.findByTitle(work.getTitle());
-        if (work.getTitle()!= null && work.getDescription() != null && work.getTodoId() != null){
-            updateWork.setTitle(work.getNewTitle());
-            updateWork.setTodoId(work.getTodoId());
-            updateWork.setDescription(work.getNewDescription());
-        }
-        Work savedWork = workRepository.save(updateWork);
-        WorkResponse workResponse = new WorkResponse();
-        workResponse.setTitle(savedWork.getTitle());
-        workResponse.setTodoId(savedWork.getTodoId());
-        workResponse.setDescription(savedWork.getDescription());
-        return workResponse;
+    public void deleteParticularTask(String id) {
+        Task task = findTaskById(id);
+        taskRepository.delete(task);
     }
 
     @Override
-    public String deleteWork(CreateWorkRequest request) {
-        Work foundWork = workRepository.findByTitle(deleteWorkRequest.getTitle());
+    public Task findTaskById(String id) {
+       return taskRepository.findById(id).orElseThrow();
+    }
 
-        if (foundWork != null){
-            workRepository.delete(foundWork);
-            return "Task Successfully Deleted";
-        }
-        throw new WorkNotFoundException("Work Not found");
+    @Override
+    public List<Task> findParticularTaskInADay(String todoId, Date dateCreated) {
 
         return null;
-    }
-
-    @Override
-    public long getCountOfTask() {
-        return workRepository.count();
-    }
-
-    @Override
-    public String workDone(Work work) {
-        work.setStatus(true);
-        work.setTimeDone(LocalDateTime.now());
-        return "successful";
-
-    }
-
-    @Override
-    public void deleteTask(Work work) {
-        Work foundTask = workRepository.findByTitle(work.getTitle());
-        workRepository.deleteByTitle(foundTask.getTitle());
-    }
-
-    @Override
-    public void deleteAll() {
-        workRepository.deleteAll();
-    }
-    @Override
-    public Work findByTitle(String title) {
-        return workRepository.findByTitle(title);
-    }
-
-    @Override
-    public Work save(Work newWork) {
-        return workRepository.save(newWork);
     }
 }

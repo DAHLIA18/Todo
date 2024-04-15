@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface TodoListRepository extends MongoRepository<TaskManager, String> {
+public interface TaskManagerRepository extends MongoRepository<TaskManager, String> {
 
     Optional<TaskManager> findTodoListByUserEmail(String email);
 
